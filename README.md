@@ -11,3 +11,4 @@ Neil's comments:
     Isolation of the layers of the system
     Investigate Home Assistant (open source software)
     LoRa point to point comm data Tx due to BW
+this is a demo edit
