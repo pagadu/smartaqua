@@ -1,2 +1,23 @@
+{"time": "2025-11-12T23:13:18", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:13:18", "from": "!9ea1f9b4", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:13:18", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:13:18", "from": "!9ea1f9b4", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
 {"time": "2025-11-12T23:13:37", "from": "!9ea1f9b4", "to": "^all", "portnum": "TEXT_MESSAGE_APP", "message": "test4"}
 {"time": "2025-11-12T23:19:18", "from": "!9ea1f9b4", "to": "^all", "portnum": "TEXT_MESSAGE_APP", "message": "test5"}
+{"time": "2025-11-12T23:26:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:27:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:27:22", "from": "!9ea1f9b4", "to": "^all", "portnum": "TEXT_MESSAGE_APP", "message": "{   \"temperature\": \"12\",   \"waterLevel\": \"normal\",   \"pH\": \"7.1\",  >
+{"time": "2025-11-12T23:28:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:28:46", "from": "!9ea1f9b4", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:29:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:29:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:30:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:31:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:31:34", "from": "!9ea1f9b4", "to": "!43b79674", "portnum": "NODEINFO_APP", "message": null}
+{"time": "2025-11-12T23:32:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:33:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:33:31", "from": "!9ea1f9b4", "to": "^all", "portnum": "TEXT_MESSAGE_APP", "message": "skibidi"}
+{"time": "2025-11-12T23:34:02", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:46:50", "from": "!9ea1f9b4", "to": "!43b79674", "portnum": "TEXT_MESSAGE_APP", "message": "skibidiToilet"}
+{"time": "2025-11-12T23:47:03", "from": "!43b79674", "to": "^all", "portnum": "TELEMETRY_APP", "message": null}
+{"time": "2025-11-12T23:47:04", "from": "!43b79674", "to": "!43b79674", "portnum": "ROUTING_APP", "message": null}
