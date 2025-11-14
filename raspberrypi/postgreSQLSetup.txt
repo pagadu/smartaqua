@@ -1,0 +1,60 @@
+These steps depend on the file messages.jsonl in the /home/pi/meshtastic/ directory, as seen in the data logging script.
+1) Install PostgreSQL
+sudo apt update
+sudo apt install -y postgresql
+
+2) Create a DB user & database for your work
+
+Create a DB role that matches your OS user (pi) and make pi the owner of the database so you don’t need sudo later.
+
+# create DB role 'pi' if it doesn't exist
+sudo -u postgres psql -d postgres -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='pi') THEN CREATE ROLE pi LOGIN; END IF; END \$\$;"
+
+# create database 'meshtastic' owned by 'pi'
+sudo -u postgres createdb -O pi meshtastic
+
+3) Create the raw-ingest table (as user pi)
+psql -d meshtastic -c "CREATE TABLE IF NOT EXISTS messages_raw (data jsonb);"
+
+4) Load your JSONL file (client-side copy as pi)
+
+Put your file at /home/pi/messages.jsonl on the machine.
+
+psql -d meshtastic -c "\
+\copy messages_raw (data) FROM '/home/pi/meshtastic/messages.jsonl' WITH (FORMAT text);"
+
+5) Quick sanity check (optional)
+psql -d meshtastic -c "SELECT COUNT(*) FROM messages_raw;"
+psql -d meshtastic -c "SELECT jsonb_pretty(data) FROM messages_raw LIMIT 5;"
+
+6) look at this table in postgreSQL; since everything is in JSON I can work with it in a variety of ways.
+
+pi@hydro:~ $ psql -d meshtastic
+psql (15.14 (Debian 15.14-0+deb12u1))
+Type "help" for help.
+
+meshtastic=# select * from messages_raw;
+                                                                data
+------------------------------------------------------------------------------------------------------------------------------------
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:13:18", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:13:18", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:13:18", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:13:18", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:13:37", "message": "test4", "portnum": "TEXT_MESSAGE_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:19:18", "message": "test5", "portnum": "TEXT_MESSAGE_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:26:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:28:46", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:29:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:29:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:30:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:31:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "!43b79674", "from": "!9ea1f9b4", "time": "2025-11-12T23:31:34", "message": null, "portnum": "NODEINFO_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:32:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:33:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "^all", "from": "!9ea1f9b4", "time": "2025-11-12T23:33:31", "message": "skibidi", "portnum": "TEXT_MESSAGE_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:34:02", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "!43b79674", "from": "!9ea1f9b4", "time": "2025-11-12T23:46:50", "message": "skibidiToilet", "portnum": "TEXT_MESSAGE_APP"}
+ {"to": "^all", "from": "!43b79674", "time": "2025-11-12T23:47:03", "message": null, "portnum": "TELEMETRY_APP"}
+ {"to": "!43b79674", "from": "!43b79674", "time": "2025-11-12T23:47:04", "message": null, "portnum": "ROUTING_APP"}
+(20 rows)
+
