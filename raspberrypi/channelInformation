@@ -2,6 +2,28 @@ SSU26_Team PSK:  TVBQMlV1WVZ0TDFEakw3YXFKSk9mT1JCVFAyaUh4S0E=
 
 API_KEY:   ADF4C3EAE5B9ABB1E3B764D633E3B
 
+meshtastic --ch-index 1 \
+  --ch-set name SSU26_Team \
+  --ch-set psk base64:TVBQMlV1WVZ0TDFEakw3YXFKSk9mT1JCVFAyaUh4S0E=
+
 MyTrio
 rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
 frequency override: 908.375
+
+meshtastic --ch-index 2 \
+  --ch-set name MyTrio \
+  --ch-set psk base64:rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
+
+To set the LoRa frequency slot (i.e., the transmit frequency), you use the CLI like this:
+
+meshtastic --set lora.channel_num <SLOT>
+meshtastic --ch-index 2 --ch-set channel_num <NUMBER> --ch-set uplinkEnabled true --ch-set downlinkEnabled true
+Channel 2 is now:
+
+Name: MyTrio
+
+PSK: rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
+
+Frequency: ~908.3 MHz (channelNum 30)
+
+Messaging enabled (uplink/downlink)
