@@ -1,3 +1,6 @@
+//here is the basic code in what functions i used to get sensors to send messages in 30 second intervals and send to the channel.
+
+
 //h
 #pragma once
 
