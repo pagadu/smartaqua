@@ -8,22 +8,10 @@ meshtastic --ch-index 1 \
 
 MyTrio
 rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
-frequency override: 908.375
+Frequency: ~908.3 MHz (channelNum 30)
 
 meshtastic --ch-index 2 \
   --ch-set name MyTrio \
   --ch-set psk base64:rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
 
-To set the LoRa frequency slot (i.e., the transmit frequency), you use the CLI like this:
-
-meshtastic --set lora.channel_num <SLOT>
-meshtastic --ch-index 2 --ch-set channel_num <NUMBER> --ch-set uplinkEnabled true --ch-set downlinkEnabled true
-Channel 2 is now:
-
-Name: MyTrio
-
-PSK: rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
-
-Frequency: ~908.3 MHz (channelNum 30)
-
-Messaging enabled (uplink/downlink)
+meshtastic --ch-index 2 --ch-set channel_num 30
