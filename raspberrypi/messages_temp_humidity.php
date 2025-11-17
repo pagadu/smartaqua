@@ -1,25 +1,25 @@
 <?php
 // messages_temp_humidity.php
-// Simple viewer for the messages_clean view in PostgreSQL
+
+// ---- SHOW ERRORS (for debugging) ----
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // ---- DB CONFIG ----
 $host   = "localhost";
 $dbname = "meshtastic";
 $user   = "pi";
-$pass   = "";   // set if you added a password for user pi
+$pass   = "hydro";   // your DB password for user pi
 
-$conn_str = "host=$host dbname=$dbname user=$user";
-if ($pass !== "") {
-    $conn_str .= " password=$pass";
-}
+$conn_str = "host=$host dbname=$dbname user=$user password=$pass";
 
 $db = pg_connect($conn_str);
-
 if (!$db) {
     die("Database connection error: " . pg_last_error());
 }
 
-// Pull latest rows from the view
+// ---- QUERY ----
 $query = "
     SELECT id, ts, time, sender, recipient, portnum, raw_message
     FROM messages_clean
@@ -104,31 +104,3 @@ if (!$result) {
             <tr>
                 <th>ID</th>
                 <th>DB Time (ts)</th>
-                <th>Packet Time</th>
-                <th>Sender</th>
-                <th>Recipient</th>
-                <th>Port</th>
-                <th>Raw Message</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php while ($row = pg_fetch_assoc($result)): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($row['id']); ?></td>
-                <td class="mono"><?php echo htmlspecialchars($row['ts']); ?></td>
-                <td class="mono"><?php echo htmlspecialchars($row['time']); ?></td>
-                <td><?php echo htmlspecialchars($row['sender']); ?></td>
-                <td><?php echo htmlspecialchars($row['recipient']); ?></td>
-                <td><?php echo htmlspecialchars($row['portnum']); ?></td>
-                <td class="mono"><?php echo htmlspecialchars($row['raw_message']); ?></td>
-            </tr>
-        <?php endwhile; ?>
-        </tbody>
-    </table>
-</main>
-</body>
-</html>
-<?php
-pg_free_result($result);
-pg_close($db);
-?>
