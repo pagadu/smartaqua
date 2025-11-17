@@ -1,10 +1,10 @@
 <?php
-// Show PHP errors in browser (so we don't just see 500)
+// Show PHP errors in browser
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// ----- DB CONNECTION -----
-$conn = pg_connect("host=localhost port=5432 dbname=meshtastic user=postgres password=hydro");
+// ----- DB CONNECTION (as user pi) -----
+$conn = pg_connect("host=localhost port=5432 dbname=meshtastic user=pi password=hydro");
 
 if (!$conn) {
     die("DB connection failed: " . pg_last_error());
@@ -27,7 +27,6 @@ $humidities   = [];
 
 while ($row = pg_fetch_assoc($result)) {
     $timestamps[]   = $row['time'];
-    // Safely cast to numbers for Chart.js
     $temperatures[] = is_null($row['temperature']) ? null : (float)$row['temperature'];
     $humidities[]   = is_null($row['humidity']) ? null : (float)$row['humidity'];
 }
