@@ -28,11 +28,12 @@ LOG_PATH = pathlib.Path("/home/pi/meshtastic/messages.jsonl")
 LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # PostgreSQL connection settings
+# Option 1: use local UNIX socket + peer auth (no password)
 DB_NAME = "meshtastic"
-DB_USER = "pi"          # change if you use a different user
-DB_PASSWORD = None      # or set a password if needed
-DB_HOST = "localhost"
-DB_PORT = 5432
+DB_USER = "pi"          # OS user "pi" must have a DB role "pi"
+DB_PASSWORD = None      # no password, peer auth handles it
+DB_HOST = None          # None => use local socket, not TCP
+DB_PORT = None          # None => default port via socket
 
 # Global DB connection / cursor
 db_conn = None
@@ -49,9 +50,12 @@ def init_db():
         conn_args = {
             "dbname": DB_NAME,
             "user": DB_USER,
-            "host": DB_HOST,
-            "port": DB_PORT,
         }
+        # Only add host/port/password if explicitly set
+        if DB_HOST is not None:
+            conn_args["host"] = DB_HOST
+        if DB_PORT is not None:
+            conn_args["port"] = DB_PORT
         if DB_PASSWORD is not None:
             conn_args["password"] = DB_PASSWORD
 
@@ -60,13 +64,12 @@ def init_db():
         db_cur = db_conn.cursor()
         print("Connected to PostgreSQL.")
     except Exception as e:
-        print("WARNING: Could not connect to PostgreSQL:", e)
-        print("         Will continue logging to file only.")
+        print('WARNING: Could not connect to PostgreSQL:', e)
+        print('         Will continue logging to file only.')
         db_conn = None
         db_cur = None
 
 
-# === Helper: safely convert bytes to text ===
 def b2s(value):
     """
     Convert bytes or bytearray to UTF-8 string.
@@ -80,7 +83,6 @@ def b2s(value):
     return value
 
 
-# === Handler: called whenever a new packet is received ===
 def on_receive(packet, interface):
     """
     Extract key fields from each packet and append them to a log file
@@ -116,17 +118,16 @@ def on_receive(packet, interface):
     print("Saved message:", entry["message"] or "(non-text packet)")
 
 
-# === Subscribe to the Meshtastic event bus ===
+# Subscribe to Meshtastic receive events
 pub.subscribe(on_receive, "meshtastic.receive")
 
-
-# === Connect to the radio and DB ===
+# Connect to radio and DB
 iface = SerialInterface()
 init_db()
 
 print("Listening for messages... (Press Ctrl+C to stop)")
 
-# === Keep script running and responsive ===
+# Keep script running
 try:
     while True:
         time.sleep(0.5)
