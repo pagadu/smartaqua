@@ -2,16 +2,17 @@
 """
 import_jsonl_to_db.py
 
-Sync messages_raw with the contents of messages.jsonl.
+Completely overwrite messages_raw with the contents of messages.jsonl.
 
-- Reads each line from ~/meshtastic/messages.jsonl
-- Truncates messages_raw
+- Reads each line from ~/meshtastic/messages.jsonl (one JSON object per line)
+- TRUNCATES messages_raw
 - Inserts each JSON object into messages_raw.data (jsonb)
 
-Run with:
-    cd ~/meshtastic
-    source bin/activate
-    python3 import_jsonl_to_db.py
+# as user pi, no sudo
+cd ~/meshtastic
+source bin/activate
+python3 import_jsonl_to_db.py
+
 """
 
 import json
@@ -24,11 +25,10 @@ import psycopg2
 JSONL_PATH = pathlib.Path("/home/pi/meshtastic/messages.jsonl")
 
 DB_NAME = "meshtastic"
-DB_USER = "pi"          # or "postgres", whichever user owns your tables
-DB_PASSWORD = "hydro"   # remove this if you're using peer auth
+DB_USER = "pi"          # must match the Linux user you run this script as
 
-TABLE_NAME = "messages_raw"
-TRUNCATE_FIRST = True
+TABLE_NAME = "messages_raw"   # expects a column named "data" of type jsonb
+TRUNCATE_FIRST = True         # we WANT to wipe the table each run
 
 # ----------------------------
 
@@ -38,13 +38,12 @@ def main():
         print(f"ERROR: JSONL file not found: {JSONL_PATH}")
         sys.exit(1)
 
-    print(f"Connecting to database '{DB_NAME}' as user '{DB_USER}'...")
+    print(f"Connecting to database '{DB_NAME}' as user '{DB_USER}' (local peer auth)...")
 
-    # No host, no port → psycopg2 uses local UNIX socket
+    # No host, no port, no password → use local UNIX socket + peer auth
     conn = psycopg2.connect(
         dbname=DB_NAME,
         user=DB_USER,
-        password=DB_PASSWORD,
     )
     cur = conn.cursor()
 
@@ -75,12 +74,12 @@ def main():
                 )
                 count += 1
 
-                if count % 100 == 0:
+                if count and count % 100 == 0:
                     conn.commit()
                     print(f"Inserted {count} rows...")
 
         conn.commit()
-        print(f"Done. Inserted {count} rows.")
+        print(f"Done. Inserted {count} rows from {JSONL_PATH} into {TABLE_NAME}.")
 
     finally:
         cur.close()
