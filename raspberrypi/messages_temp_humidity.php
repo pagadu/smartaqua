@@ -1,135 +1,106 @@
 <?php
-// Connect to PostgreSQL – same creds you used in index.php
-$conn = pg_connect("host=localhost dbname=meshtastic user=webapp password=hydro");
-if (!$conn) {
-    die("Error: Unable to connect to database.");
+// Simple viewer for the messages_temp_humidity view
+
+// ---- DB connection ----
+$connectionString = "host=127.0.0.1 dbname=meshtastic user=webapp password=hydro";
+$dbconn = pg_connect($connectionString);
+
+if (!$dbconn) {
+    die("Database connection failed: " . pg_last_error());
 }
 
-// Query the view we just made
-$sql = "
-    SELECT
-        ts,
-        time,
-        sender,
-        recipient,
-        portnum,
-        temperature,
-        humidity
-    FROM messages_temp_humidity
-    ORDER BY time DESC;
-";
-$result = pg_query($conn, $sql);
+// Get latest rows from the view
+$query = "SELECT * FROM messages_temp_humidity ORDER BY ts DESC LIMIT 200;";
+$result = pg_query($dbconn, $query);
+
 if (!$result) {
-    die("Error running query: " . pg_last_error($conn));
+    die("Query failed: " . pg_last_error($dbconn));
 }
+
+// ---- Output HTML ----
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Meshtastic – Temperature & Humidity</title>
+    <title>Meshtastic Temperature &amp; Humidity</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #111;
-            color: #eee;
-            margin: 0;
-            padding: 0;
+            font-family: sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
         }
-
         h1 {
-            text-align: center;
-            padding: 20px 0;
-            margin: 0;
+            margin-bottom: 10px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto 40px auto;
-            padding: 0 10px 40px 10px;
+        p {
+            margin-top: 0;
+            margin-bottom: 15px;
         }
-
         table {
             border-collapse: collapse;
             width: 100%;
-            margin-top: 10px;
+            background: #fff;
         }
-
         th, td {
-            border: 1px solid #444;
-            padding: 6px 10px;
-            text-align: left;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
             font-size: 0.9rem;
         }
-
         th {
-            background-color: #222;
+            background: #eee;
         }
-
         tr:nth-child(even) {
-            background-color: #1a1a1a;
+            background: #f9f9f9;
         }
-
-        tr:nth-child(odd) {
-            background-color: #151515;
+        .timestamp-col {
+            white-space: nowrap;
         }
-
-        .subtitle {
-            text-align: center;
-            margin-top: -10px;
-            margin-bottom: 10px;
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-
         a {
-            color: #7fb9ff;
+            color: #0077cc;
             text-decoration: none;
         }
-
         a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <h1>Meshtastic – Temperature &amp; Humidity</h1>
-    <div class="subtitle">
-        Parsed from JSON inside the <code>message</code> field (non-JSON messages show NULL).
-        &nbsp;|&nbsp; <a href="index.php">Back to main view</a>
-    </div>
+    <h1>messages_temp_humidity</h1>
+    <p>
+        Showing latest 200 rows from the view (Temperature &amp; Humidity parsed from the
+        <code>message</code> field).
+        &nbsp;|&nbsp;
+        <a href="index.php">Back to messages_clean</a>
+    </p>
 
-    <div class="container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ts (DB)</th>
-                    <th>time (packet)</th>
-                    <th>sender</th>
-                    <th>recipient</th>
-                    <th>portnum</th>
-                    <th>temperature</th>
-                    <th>humidity</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = pg_fetch_assoc($result)): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['ts']); ?></td>
-                        <td><?php echo htmlspecialchars($row['time']); ?></td>
-                        <td><?php echo htmlspecialchars($row['sender']); ?></td>
-                        <td><?php echo htmlspecialchars($row['recipient']); ?></td>
-                        <td><?php echo htmlspecialchars($row['portnum']); ?></td>
-                        <td><?php echo htmlspecialchars($row['temperature']); ?></td>
-                        <td><?php echo htmlspecialchars($row['humidity']); ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    </div>
+    <table>
+        <thead>
+            <tr>
+                <?php
+                $numFields = pg_num_fields($result);
+                for ($i = 0; $i < $numFields; $i++) {
+                    $fieldName = pg_field_name($result, $i);
+                    echo "<th>" . htmlspecialchars($fieldName) . "</th>";
+                }
+                ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            while ($row = pg_fetch_assoc($result)) {
+                echo "<tr>";
+                foreach ($row as $colName => $value) {
+                    $class = ($colName === 'ts' || $colName === 'received_at') ? 'timestamp-col' : '';
+                    echo "<td class=\"{$class}\">" . htmlspecialchars((string)$value) . "</td>";
+                }
+                echo "</tr>";
+            }
+            ?>
+        </tbody>
+    </table>
 </body>
 </html>
 <?php
 pg_free_result($result);
-pg_close($conn);
-?>
+pg_close($dbconn);
