@@ -1,0 +1,11 @@
+# clean message view for easy reading and use in apache.
+CREATE VIEW messages_clean AS
+SELECT
+    id,
+    data->>'time' AS time,
+    data->>'from' AS sender,
+    data->>'to' AS recipient,
+    data->>'portnum' AS portnum,
+    data->>'message' AS raw_message,
+    received_at
+FROM messages_raw;
