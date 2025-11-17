@@ -1,106 +1,135 @@
 <?php
-// messages_temp_humidity.php
-
-// ---- SHOW ERRORS (for debugging) ----
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// ---- DB CONFIG ----
-$host   = "localhost";
-$dbname = "meshtastic";
-$user   = "pi";
-$pass   = "hydro";   // your DB password for user pi
-
-$conn_str = "host=$host dbname=$dbname user=$user password=$pass";
-
-$db = pg_connect($conn_str);
-if (!$db) {
-    die("Database connection error: " . pg_last_error());
+// Connect to PostgreSQL – same creds you used in index.php
+$conn = pg_connect("host=localhost dbname=meshtastic user=webapp password=hydro");
+if (!$conn) {
+    die("Error: Unable to connect to database.");
 }
 
-// ---- QUERY ----
-$query = "
-    SELECT id, ts, time, sender, recipient, portnum, raw_message
-    FROM messages_clean
-    ORDER BY ts DESC
-    LIMIT 500;
+// Query the view we just made
+$sql = "
+    SELECT
+        ts,
+        time,
+        sender,
+        recipient,
+        portnum,
+        temperature,
+        humidity
+    FROM messages_temp_humidity
+    ORDER BY time DESC;
 ";
-
-$result = pg_query($db, $query);
+$result = pg_query($conn, $sql);
 if (!$result) {
-    die("Query error: " . pg_last_error($db));
+    die("Error running query: " . pg_last_error($conn));
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Meshtastic Messages – Temp/Humidity View</title>
+    <title>Meshtastic – Temperature & Humidity</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #111;
+            background-color: #111;
             color: #eee;
             margin: 0;
             padding: 0;
         }
-        header {
-            background: #222;
-            padding: 16px;
-            border-bottom: 1px solid #333;
-        }
-        header h1 {
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
             margin: 0;
-            font-size: 24px;
         }
-        header p {
-            margin: 4px 0 0 0;
-            font-size: 12px;
-            color: #aaa;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 40px auto;
+            padding: 0 10px 40px 10px;
         }
-        main {
-            padding: 16px;
-        }
+
         table {
             border-collapse: collapse;
             width: 100%;
-            font-size: 12px;
+            margin-top: 10px;
         }
-        thead {
-            background: #1c1c1c;
-        }
+
         th, td {
-            border: 1px solid #333;
-            padding: 6px 8px;
+            border: 1px solid #444;
+            padding: 6px 10px;
             text-align: left;
-            vertical-align: top;
+            font-size: 0.9rem;
         }
-        tr:nth-child(even) {
-            background: #181818;
-        }
-        tr:nth-child(odd) {
-            background: #101010;
-        }
+
         th {
-            position: sticky;
-            top: 0;
-            z-index: 2;
+            background-color: #222;
         }
-        .mono {
-            font-family: "Courier New", monospace;
-            white-space: pre-wrap;
+
+        tr:nth-child(even) {
+            background-color: #1a1a1a;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #151515;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        a {
+            color: #7fb9ff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<header>
-    <h1>Meshtastic Messages – Temp/Humidity</h1>
-    <p>Showing latest rows from PostgreSQL view <code>messages_clean</code></p>
-</header>
-<main>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>DB Time (ts)</th>
+    <h1>Meshtastic – Temperature &amp; Humidity</h1>
+    <div class="subtitle">
+        Parsed from JSON inside the <code>message</code> field (non-JSON messages show NULL).
+        &nbsp;|&nbsp; <a href="index.php">Back to main view</a>
+    </div>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ts (DB)</th>
+                    <th>time (packet)</th>
+                    <th>sender</th>
+                    <th>recipient</th>
+                    <th>portnum</th>
+                    <th>temperature</th>
+                    <th>humidity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($row = pg_fetch_assoc($result)): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($row['ts']); ?></td>
+                        <td><?php echo htmlspecialchars($row['time']); ?></td>
+                        <td><?php echo htmlspecialchars($row['sender']); ?></td>
+                        <td><?php echo htmlspecialchars($row['recipient']); ?></td>
+                        <td><?php echo htmlspecialchars($row['portnum']); ?></td>
+                        <td><?php echo htmlspecialchars($row['temperature']); ?></td>
+                        <td><?php echo htmlspecialchars($row['humidity']); ?></td>
+                    </tr>
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+<?php
+pg_free_result($result);
+pg_close($conn);
+?>
