@@ -1,0 +1,34 @@
+CREATE OR REPLACE VIEW messages_clean AS
+SELECT
+    id,
+    ts,
+    data->>'time'      AS time,
+    data->>'from'      AS sender,
+    data->>'to'        AS recipient,
+    data->>'portnum'   AS portnum,
+    data->>'message'   AS raw_message
+FROM messages_raw;
+
+CREATE VIEW messages_temp_humidity AS
+SELECT
+    ts,
+    (data->>'time')::timestamptz AS time,
+    data->>'from'                 AS sender,
+    data->>'to'                   AS recipient,
+    data->>'portnum'              AS portnum,
+
+    CASE
+        WHEN data->>'message' IS NOT NULL
+             AND data->>'message' ~ '^\s*\{.*\}\s*$'
+        THEN ((data->>'message')::jsonb ->> 'Temperature')::numeric
+        ELSE NULL
+    END AS temperature,
+
+    CASE
+        WHEN data->>'message' IS NOT NULL
+             AND data->>'message' ~ '^\s*\{.*\}\s*$'
+        THEN ((data->>'message')::jsonb ->> 'Humidity')::numeric
+        ELSE NULL
+    END AS humidity
+
+FROM messages_raw;

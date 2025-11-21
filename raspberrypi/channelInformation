@@ -1,0 +1,17 @@
+SSU26_Team PSK:  TVBQMlV1WVZ0TDFEakw3YXFKSk9mT1JCVFAyaUh4S0E=
+
+API_KEY:   ADF4C3EAE5B9ABB1E3B764D633E3B
+
+meshtastic --ch-index 1 \
+  --ch-set name SSU26_Team \
+  --ch-set psk base64:TVBQMlV1WVZ0TDFEakw3YXFKSk9mT1JCVFAyaUh4S0E=
+
+MyTrio
+rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
+Frequency: ~908.3 MHz (channelNum 30)
+
+meshtastic --ch-index 2 \
+  --ch-set name MyTrio \
+  --ch-set psk base64:rcfkK3jnt7M9s9r5M0sB8QhpAjK71StptWUQ7/YKCKE=
+
+meshtastic --ch-index 2 --ch-set channel_num 30
