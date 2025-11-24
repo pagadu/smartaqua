@@ -1,0 +1,36 @@
+Things still needed in CLASS:
+Project Summary of One Project Proposal
+A Problem Worth Solving
+Faculty Advisor Approval Form (Form-1)
+Customer Discovery - Interview Questions
+Customer Interview Analysis - Report
+Problem Statement, Value Proposition, and Customer Discovery
+Project Introduction - Slides
+Problem Statement, Introduction, Literature Review - Report
+(Updated) Marketing and Engineering Requirements
+Marketing and Engineering Requirements - Slides
+System Block Diagram, Hardware Block Diagram, Software Flowchart - Slides
+Alternative Design Matrix - Report
+Alternative Design Matrix - Slides
+Challenges and Risks - Slides
+Challenges and Risks - Report
+Critical Path Homework
+Apply Critical Path to your project
+Test Plan
+Gantt Chart and Test Plan - Slides
+Gantt Chart and Schedule - Report
+Meeting Logs (1): Faculty advisor (Form-2)
+Estimated Budget, Supporting Courses - Slides
+Budget, Parts List, References - Report
+Ethics Quiz
+LinkedIn Profile
+Practice Presentation - Draft Slides
+Project Website
+Meeting Logs (2): Faculty advisor (Form-2)
+
+Things still needed in PRESENTATION:
+Test Plan
+Gantt Chart and Test Plan - Slides
+Gantt Chart and Schedule - Report
+Estimated Budget, Supporting Courses - Slides
+Estimated budget
