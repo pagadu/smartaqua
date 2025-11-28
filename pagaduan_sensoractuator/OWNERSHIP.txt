@@ -1,0 +1,10 @@
+Author: Alexander Pagaduan
+This folder contains original Sensor/Actuator firmware created for the
+Smart Aquaponics Senior Design Project.
+
+This work is copyrighted and may NOT be reused, copied, modified, or 
+integrated into any project without my written permission.
+
+Permitted use: Smart Aquaponics Senior Design only.
+
+If I am no longer participating, this permission is revoked.
